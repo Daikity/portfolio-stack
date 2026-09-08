@@ -1,6 +1,6 @@
-# Portfolio — оркестрация
+# portfolio-stack
 
-Локальный стек: **nginx-прокси**, **MongoDB**, **лендинг** (Next.js standalone) и демо-SPA под `/demos/<id>/`.
+Оркестрация портфолио: **nginx-прокси**, **MongoDB**, **лендинг** (Next.js standalone) и демо-SPA под `/demos/<id>/`.
 
 Публичный домен: `igor-edison-personal.ru` (локально — `http://localhost`).
 
