@@ -88,7 +88,8 @@ function buildNginx(projects) {
     if (project.hasDockerfile) {
       lines.push(`# ${project.title} → ${service}`);
       lines.push(`location ${base} {`);
-      lines.push(`  proxy_pass http://${service}:80;`);
+      // trailing slash у proxy_pass снимает префикс /demos/<id>/ перед upstream
+      lines.push(`  proxy_pass http://${service}:80/;`);
       lines.push('  proxy_http_version 1.1;');
       lines.push('  proxy_set_header Host $host;');
       lines.push('  proxy_set_header X-Real-IP $remote_addr;');

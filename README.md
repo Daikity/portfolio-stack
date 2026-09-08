@@ -9,8 +9,8 @@
 ```
 Visitor → proxy (nginx :80)
             ├─ /              → landing:3000 (Next standalone)
-            ├─ /demos/flowcrm/   → demo-flowcrm (этап 5)
-            └─ /demos/shopadmin/ → demo-shopadmin (этап 5)
+            ├─ /demos/flowcrm/   → demo-flowcrm (nginx SPA)
+            └─ /demos/shopadmin/ → demo-shopadmin (nginx SPA)
 
 landing → mongo
 landing → Telegram Bot API (опционально)
@@ -36,7 +36,8 @@ docker compose up -d --build
 - лендинг отдаёт HTML на `/`, `/en/`, `/de/`
 - `GET /api/projects` — список из манифестов
 - `GET /api/requests` без `x-admin-secret` → 401
-- Mongo: контейнер `portfolio-mongo-1` в `Up`
+- демо: `/demos/flowcrm/`, `/demos/shopadmin/` (SPA, F5 на вложенном пути)
+- Mongo: контейнер `mongo` в `Up`
 
 Остановка: `docker compose down`.
 
@@ -61,7 +62,8 @@ docker compose up -d --build
 }
 ```
 
-Пока нет `Dockerfile`, sync пишет заглушку `503` на `/demos/<id>/` (демо подключаются на этапе 5).
+Пока нет `Dockerfile`, sync пишет заглушку `503` на `/demos/<id>/`.
+С `Dockerfile` — сервис `demo-<id>` и `proxy_pass` со strip префикса.
 
 ## Файлы
 
@@ -87,5 +89,5 @@ docker compose up -d --build
 
 ## Дальше
 
-- Этап 5: Dockerfile + `base`/`basename` для FlowCRM и ShopAdmiin
 - Карточки Kwork / Upwork (заказ через биржи) — отдельная итерация
+- Полировка деплоя / SEO-чеклист / deprecated старого бэка (этап 6)

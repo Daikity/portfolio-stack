@@ -1,2 +1,17 @@
 # Автогенерация: node scripts/portfolio-sync.mjs — не править вручную
-services: {}
+services:
+  demo-flowcrm:
+    build:
+      context: ./FlowCRM
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
+  demo-shopadmin:
+    build:
+      context: ./ShopAdmiin
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
