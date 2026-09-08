@@ -41,11 +41,15 @@ docker compose up -d --build
 
 Остановка: `docker compose down`.
 
-## Манифест и sync
+## Новый проект (только папка + конфиг)
 
-1. Папка + `Dockerfile` + `portfolio.project.json`
-2. `node scripts/portfolio-sync.mjs`
-3. `docker compose up -d --build`
+Лендинг не знает о проектах заранее: карточка, кейс и демо берутся из папки проекта.
+
+1. Папка рядом с корнем + запись в `.gitignore` корня  
+2. `portfolio.project.json` (`show`, опционально `case` для View case)  
+3. `Dockerfile` + `nginx.conf`, Vite `base: '/demos/<id>/'`  
+4. `node scripts/portfolio-sync.mjs`  
+5. `docker compose up -d --build`
 
 ```json
 {
@@ -55,10 +59,29 @@ docker compose up -d --build
   "folder": "FlowCRM",
   "stack": ["React", "Vite"],
   "summary": "CRM для воронки продаж",
+  "show": true,
   "featured": true,
-  "status": "online"
+  "status": "online",
+  "case": {
+    "ru": {
+      "summary": "…",
+      "problem": "…",
+      "solution": "…",
+      "result": "…",
+      "metaTitle": "…",
+      "metaDescription": "…"
+    },
+    "en": {},
+    "de": {}
+  }
 }
 ```
+
+| Поле | Эффект |
+|------|--------|
+| `show: false` | карточка скрыта, демо в proxy может остаться |
+| без `case` | только демо, кнопки View case нет |
+| с `case.ru/en/de` | страница `/work/<id>` |
 
 Без `Dockerfile` — заглушка `503` на `/demos/<id>/`. С ним — сервис `demo-<id>`, `proxy_pass` со strip префикса.
 
