@@ -1,53 +1,51 @@
 # Portfolio — оркестрация
 
-Локальный стек портфолио: **nginx-прокси**, **MongoDB**, **лендинг** (Next.js) и демо-SPA под `/demos/<id>/`.
+Локальный стек: **nginx-прокси**, **MongoDB**, **лендинг** (Next.js standalone) и демо-SPA под `/demos/<id>/`.
 
-Домен входа: `igor-edison-personal.ru` (локально — `http://localhost`).
+Публичный домен: `igor-edison-personal.ru` (локально — `http://localhost`).
 
 ## Архитектура
 
 ```
 Visitor → proxy (nginx :80)
-            ├─ /              → landing:3000 (Next standalone)
-            ├─ /demos/flowcrm/   → demo-flowcrm (nginx SPA)
-            └─ /demos/shopadmin/ → demo-shopadmin (nginx SPA)
+            ├─ /                    → landing:3000
+            ├─ /demos/flowcrm/      → demo-flowcrm
+            └─ /demos/shopadmin/    → demo-shopadmin
 
 landing → mongo
 landing → Telegram Bot API (опционально)
-landing ← volume ./:/projects:ro  (читает */portfolio.project.json)
+landing ← ./:/projects:ro  (*/portfolio.project.json)
 ```
 
-Дочерние репозитории (`igor-edison-personal`, `FlowCRM`, `ShopAdmiin`) остаются отдельными; этот корень — только compose / proxy / sync (gitignore на папки приложений).
+Дочерние репо (`igor-edison-personal`, `FlowCRM`, `ShopAdmiin`) — отдельные git; корень — только compose / proxy / sync.  
+`igor_edison_back` удалён (API внутри Next).
 
 ## Быстрый старт
 
 ```bash
 cp .env.example .env
-# заполнить ADMIN_SECRET, при необходимости BOT_TOKEN / CHAT_ID
+# ADMIN_SECRET обязателен для /api/requests; BOT_TOKEN / CHAT_ID — по желанию
 
 node scripts/portfolio-sync.mjs
 docker compose up -d --build
 ```
 
-Открыть: [http://localhost](http://localhost) (или `PROXY_PORT` из `.env`).
-
-Проверки:
-
-- лендинг отдаёт HTML на `/`, `/en/`, `/de/`
-- `GET /api/projects` — список из манифестов
-- `GET /api/requests` без `x-admin-secret` → 401
-- демо: `/demos/flowcrm/`, `/demos/shopadmin/` (SPA, F5 на вложенном пути)
-- Mongo: контейнер `mongo` в `Up`
+| Проверка | Ожидание |
+|----------|----------|
+| http://localhost/ | SSR лендинг |
+| `/en/`, `/de/` | локали |
+| `/api/projects/` | JSON манифестов |
+| `/api/requests/` без секрета | 401 |
+| `/demos/flowcrm/`, `/demos/shopadmin/` | SPA + F5 на вложенном пути |
+| `/sitemap.xml`, `/robots.txt` | SEO |
 
 Остановка: `docker compose down`.
 
-## Добавить демо-проект
+## Манифест и sync
 
-1. Папка в корне + `Dockerfile` + `portfolio.project.json`
-2. `node scripts/portfolio-sync.mjs` — обновит nginx и compose-фрагмент
+1. Папка + `Dockerfile` + `portfolio.project.json`
+2. `node scripts/portfolio-sync.mjs`
 3. `docker compose up -d --build`
-
-Пример манифеста:
 
 ```json
 {
@@ -62,17 +60,16 @@ docker compose up -d --build
 }
 ```
 
-Пока нет `Dockerfile`, sync пишет заглушку `503` на `/demos/<id>/`.
-С `Dockerfile` — сервис `demo-<id>` и `proxy_pass` со strip префикса.
+Без `Dockerfile` — заглушка `503` на `/demos/<id>/`. С ним — сервис `demo-<id>`, `proxy_pass` со strip префикса.
 
 ## Файлы
 
 | Путь | Назначение |
 |------|------------|
 | `docker-compose.yml` | proxy, mongo, landing |
-| `docker-compose.demos.generated.yml` | сервисы демо (sync) |
-| `proxy/nginx.conf` | маршруты `/` и include демо |
-| `proxy/demos.generated.conf` | location `/demos/...` (sync) |
+| `docker-compose.demos.generated.yml` | демо (sync) |
+| `proxy/nginx.conf` | `/` + include демо |
+| `proxy/demos.generated.conf` | `/demos/...` (sync) |
 | `scripts/portfolio-sync.mjs` | генерация по манифестам |
 | `.env.example` | mongo, telegram, admin, порт |
 
@@ -80,14 +77,19 @@ docker compose up -d --build
 
 | Переменная | Описание |
 |------------|----------|
-| `PROXY_PORT` | внешний порт nginx (по умолчанию 80) |
-| `MONGO_URI` | для лендинга, в compose: `mongodb://mongo:27017` |
+| `PROXY_PORT` | внешний порт nginx (80) |
+| `MONGO_URI` | `mongodb://mongo:27017` в compose |
 | `MONGO_DB` | имя БД |
 | `BOT_TOKEN` / `CHAT_ID` | Telegram |
 | `ADMIN_SECRET` | заголовок `x-admin-secret` для `/api/requests` |
-| `DOMAIN` | публичный домен (документация) |
+| `DOMAIN` | публичный домен |
+
+## Admin
+
+```bash
+curl -H "x-admin-secret: $ADMIN_SECRET" http://localhost/api/requests/
+```
 
 ## Дальше
 
 - Карточки Kwork / Upwork (заказ через биржи) — отдельная итерация
-- Полировка деплоя / SEO-чеклист / deprecated старого бэка (этап 6)
