@@ -24,6 +24,14 @@ services:
     networks:
       - portfolio
 
+  demo-noir-patisserie:
+    build:
+      context: ./commercial-landings/apps/noir-patisserie
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-shopadmin:
     build:
       context: ./ShopAdmiin
