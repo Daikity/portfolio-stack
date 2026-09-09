@@ -4,6 +4,10 @@
  * - proxy/demos.generated.conf — location для /demos/<id>/
  * - docker-compose.demos.generated.yml — сервисы демо (если есть Dockerfile)
  *
+ * Discovery:
+ * - top-level папки (FlowCRM, ShopAdmiin, …)
+ * - commercial-landings/apps/* (monorepo landing apps)
+ *
  * Запуск: node scripts/portfolio-sync.mjs
  */
 
@@ -15,6 +19,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const NGINX_OUT = path.join(ROOT, 'proxy', 'demos.generated.conf');
 const COMPOSE_OUT = path.join(ROOT, 'docker-compose.demos.generated.yml');
+
+const SKIP_TOP_LEVEL = new Set(['node_modules', 'proxy', 'scripts']);
 
 /**
  * @param {string} dir
@@ -32,34 +38,58 @@ async function readManifest(dir) {
   }
 }
 
+/**
+ * @param {string} absFolder
+ * @param {Map<string, object>} byId
+ */
+async function tryAddProject(absFolder, byId) {
+  const manifest = await readManifest(absFolder);
+  if (!manifest) return;
+
+  const hasDockerfile = await fs
+    .access(path.join(absFolder, 'Dockerfile'))
+    .then(() => true)
+    .catch(() => false);
+
+  // folder из манифеста — source of truth для docker build context
+  const existing = byId.get(manifest.id);
+  if (existing) {
+    console.warn(
+      `Дубликат id="${manifest.id}": ${existing.folder} и ${manifest.folder} — оставляем первый`,
+    );
+    return;
+  }
+
+  byId.set(manifest.id, { ...manifest, absFolder, hasDockerfile });
+}
+
 async function discoverProjects() {
+  const byId = new Map();
   const entries = await fs.readdir(ROOT, { withFileTypes: true });
-  const projects = [];
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
-    if (
-      entry.name.startsWith('.') ||
-      entry.name === 'node_modules' ||
-      entry.name === 'proxy' ||
-      entry.name === 'scripts'
-    ) {
-      continue;
-    }
+    if (entry.name.startsWith('.') || SKIP_TOP_LEVEL.has(entry.name)) continue;
 
     const absFolder = path.join(ROOT, entry.name);
-    const manifest = await readManifest(absFolder);
-    if (!manifest) continue;
+    await tryAddProject(absFolder, byId);
 
-    const hasDockerfile = await fs
-      .access(path.join(absFolder, 'Dockerfile'))
-      .then(() => true)
-      .catch(() => false);
-
-    projects.push({ ...manifest, absFolder, hasDockerfile });
+    // Monorepo apps: commercial-landings/apps/<slug>
+    if (entry.name === 'commercial-landings') {
+      const appsDir = path.join(absFolder, 'apps');
+      try {
+        const apps = await fs.readdir(appsDir, { withFileTypes: true });
+        for (const app of apps) {
+          if (!app.isDirectory() || app.name.startsWith('.')) continue;
+          await tryAddProject(path.join(appsDir, app.name), byId);
+        }
+      } catch {
+        // apps/ ещё нет — ок на Phase 0
+      }
+    }
   }
 
-  return projects.sort((a, b) => a.id.localeCompare(b.id));
+  return [...byId.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
 /** Нормализует demoBase: /demos/flowcrm/ */
@@ -98,7 +128,7 @@ function buildNginx(projects) {
       lines.push('}');
       lines.push('');
     } else {
-      lines.push(`# ${project.title} — Dockerfile отсутствует (этап 5)`);
+      lines.push(`# ${project.title} — Dockerfile отсутствует`);
       lines.push(`location ${base} {`);
       lines.push('  default_type text/plain;');
       lines.push(

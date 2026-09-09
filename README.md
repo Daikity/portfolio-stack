@@ -47,9 +47,15 @@ docker compose up -d --build
 
 1. Папка рядом с корнем + запись в `.gitignore` корня  
 2. `portfolio.project.json` (`show`, опционально `case` для View case)  
-3. `Dockerfile` + `nginx.conf`, Vite `base: '/demos/<id>/'`  
+3. `Dockerfile` + `nginx.conf`, Vite `base: '/demos/<id>/'` (или Next `basePath` + `output: 'export'`)  
 4. `node scripts/portfolio-sync.mjs`  
 5. `docker compose up -d --build`
+
+### commercial-landings (monorepo)
+
+Отдельный git + pnpm workspaces. Манифесты лежат в `commercial-landings/apps/<slug>/portfolio.project.json`  
+с `"folder": "commercial-landings/apps/<slug>"`. Sync подхватывает эти apps автоматически.  
+См. `commercial-landings/README.md`.
 
 ```json
 {

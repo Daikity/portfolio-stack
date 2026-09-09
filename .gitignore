@@ -2,10 +2,23 @@
 .env
 .env.local
 
+# Локальные файлы
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
+*.wim
+*.iso
+*-plan.md
+
+
 # Дочерние репозитории — отдельные git, в корне только orchestration
 FlowCRM/
 ShopAdmiin/
 igor-edison-personal/
+commercial-landings/
 
 # OS / IDE
 .DS_Store

@@ -1,5 +1,13 @@
 # Автогенерация: node scripts/portfolio-sync.mjs — не править вручную
 services:
+  demo-commercial-landings:
+    build:
+      context: ./commercial-landings/apps/showcase
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-flowcrm:
     build:
       context: ./FlowCRM
