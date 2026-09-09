@@ -1,5 +1,13 @@
 # Автогенерация: node scripts/portfolio-sync.mjs — не править вручную
 services:
+  demo-aura-studio:
+    build:
+      context: ./commercial-landings/apps/aura-studio
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-commercial-landings:
     build:
       context: ./commercial-landings/apps/showcase
