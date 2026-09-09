@@ -8,6 +8,14 @@ services:
     networks:
       - portfolio
 
+  demo-ferment:
+    build:
+      context: ./commercial-landings/apps/ferment
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-flowcrm:
     build:
       context: ./FlowCRM
