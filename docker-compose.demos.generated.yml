@@ -64,6 +64,14 @@ services:
     networks:
       - portfolio
 
+  demo-northline:
+    build:
+      context: ./commercial-landings/apps/northline
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-shopadmin:
     build:
       context: ./ShopAdmiin
