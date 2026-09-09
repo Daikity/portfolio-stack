@@ -40,6 +40,14 @@ services:
     networks:
       - portfolio
 
+  demo-mona-skin:
+    build:
+      context: ./commercial-landings/apps/mona-skin
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-noir-patisserie:
     build:
       context: ./commercial-landings/apps/noir-patisserie
