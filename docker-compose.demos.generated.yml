@@ -103,3 +103,11 @@ services:
     restart: unless-stopped
     networks:
       - portfolio
+
+  demo-volt-garage:
+    build:
+      context: ./commercial-landings/apps/volt-garage
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
