@@ -104,6 +104,14 @@ services:
     networks:
       - portfolio
 
+  demo-orbit-law:
+    build:
+      context: ./commercial-landings/apps/orbit-law
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-shopadmin:
     build:
       context: ./ShopAdmiin
