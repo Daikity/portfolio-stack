@@ -95,3 +95,11 @@ services:
     restart: unless-stopped
     networks:
       - portfolio
+
+  demo-vanta-detailing:
+    build:
+      context: ./commercial-landings/apps/vanta-detailing
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
