@@ -10,14 +10,15 @@
 Visitor → proxy (nginx :80)
             ├─ /                    → landing:3000
             ├─ /demos/flowcrm/      → demo-flowcrm
-            └─ /demos/shopadmin/    → demo-shopadmin
+            ├─ /demos/shopadmin/    → demo-shopadmin
+            └─ /demos/pinnancle/    → demo-pinnancle
 
 landing → mongo
 landing → Telegram Bot API (опционально)
 landing ← ./:/projects:ro  (*/portfolio.project.json)
 ```
 
-Дочерние репо (`igor-edison-personal`, `FlowCRM`, `ShopAdmiin`) — отдельные git; корень — только compose / proxy / sync.  
+Дочерние репо (`igor-edison-personal`, `FlowCRM`, `ShopAdmiin`, `pinnancle`, `commercial-landings`) — отдельные git; корень — только compose / proxy / sync.  
 `igor_edison_back` удалён (API внутри Next).
 
 ## Быстрый старт
@@ -36,7 +37,7 @@ docker compose up -d --build
 | `/en/`, `/de/` | локали |
 | `/api/projects/` | JSON манифестов |
 | `/api/requests/` без секрета | 401 |
-| `/demos/flowcrm/`, `/demos/shopadmin/` | SPA + F5 на вложенном пути |
+| `/demos/flowcrm/`, `/demos/shopadmin/`, `/demos/pinnancle/` | SPA/static + F5 на вложенном пути |
 | `/sitemap.xml`, `/robots.txt` | SEO |
 
 Остановка: `docker compose down`.

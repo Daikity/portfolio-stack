@@ -112,6 +112,14 @@ services:
     networks:
       - portfolio
 
+  demo-pinnancle:
+    build:
+      context: ./pinnancle
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-pulse-digital:
     build:
       context: ./commercial-landings/apps/pulse-digital
