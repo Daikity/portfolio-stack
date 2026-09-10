@@ -85,7 +85,8 @@ docker compose up -d --build
 
 | Поле | Эффект |
 |------|--------|
-| `show: false` | карточка скрыта, демо в proxy может остаться |
+| `featured: true` | карточка на главной (остальные commercial — через showcase) |
+| `show: false` | скрыт из реестра лендинга |
 | без `case` | только демо, кнопки View case нет |
 | с `case.ru/en/de` | страница `/work/<id>` |
 
