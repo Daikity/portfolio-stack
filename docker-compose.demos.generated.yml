@@ -112,6 +112,14 @@ services:
     networks:
       - portfolio
 
+  demo-pulse-digital:
+    build:
+      context: ./commercial-landings/apps/pulse-digital
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-shopadmin:
     build:
       context: ./ShopAdmiin
