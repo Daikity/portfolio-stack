@@ -88,6 +88,14 @@ services:
     networks:
       - portfolio
 
+  demo-north-and-co:
+    build:
+      context: ./commercial-landings/apps/north-and-co
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-northline:
     build:
       context: ./commercial-landings/apps/northline
