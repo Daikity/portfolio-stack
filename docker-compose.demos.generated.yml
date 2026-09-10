@@ -40,6 +40,14 @@ services:
     networks:
       - portfolio
 
+  demo-frame-house:
+    build:
+      context: ./commercial-landings/apps/frame-house
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - portfolio
+
   demo-kairo:
     build:
       context: ./commercial-landings/apps/kairo
